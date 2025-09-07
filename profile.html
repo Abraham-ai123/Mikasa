@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ABRAHAM THANKGOD | Portfolio</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- GSAP & Typed.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --accent-blue: #0ea5ff;
+      --accent-green: #22c55e;
+      --card-bg-light: #f3f4f6;
+      --card-bg-dark: #111827;
+    }
+
+    html,body { height:100%; }
+    body {
+      font-family: 'Neue Machina', sans-serif;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      scroll-behavior: smooth;
+      transition: background-color .35s, color .35s;
+    }
+
+    /* Hero title */
+    .hero-title { font-size: clamp(2.25rem, 5vw, 4.5rem); font-weight:900; letter-spacing:-0.02em; }
+    .subtle { color: rgba(255,255,255,0.85); }
+
+    /* subtle reusable */
+    .glass-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04); backdrop-filter: blur(6px); }
+
+    /* Floating icons animation (About) */
+    @keyframes floaty {
+      0% { transform: translateY(0) translateX(0) rotate(0deg); }
+      50% { transform: translateY(-14px) translateX(6px) rotate(6deg); }
+      100% { transform: translateY(0) translateX(0) rotate(0deg); }
+    }
+
+    .floaty { animation: floaty 4.5s ease-in-out infinite; }
+
+    /* Project card tilt */
+    .tilt-card {
+      transform-style: preserve-3d;
+      transition: transform .35s ease, box-shadow .35s ease;
+      will-change: transform;
+    }
+    .tilt-card:hover {
+      transform: translateY(-8px) rotateX(3deg) rotateY(2deg) scale(1.02);
+      box-shadow: 0 20px 50px rgba(2,6,23,0.6);
+    }
+
+    /* Orbiting icons (Contact) */
+    .orbit {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .orbit .dot {
+      position: absolute;
+      width: 44px; height:44px;
+      display:flex; align-items:center; justify-content:center;
+      border-radius: 999px;
+      backdrop-filter: blur(4px);
+      transition: transform .35s ease;
+    }
+
+    /* animate different orbit distances */
+    @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .orbit.spin-1 { animation: spin-slow 14s linear infinite; }
+    .orbit.spin-2 { animation: spin-slow 10s linear reverse infinite; }
+    .orbit.spin-3 { animation: spin-slow 18s linear infinite; }
+
+    /* WhatsApp slide/pulse */
+    #whatsapp-btn img { animation: pulse 1.6s infinite ease-in-out; filter: drop-shadow(0 0 8px rgba(37,211,102,0.7)); }
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+    /* mobile adjustments for illustrative elements */
+    @media (max-width: 768px) {
+      .orbit .dot { width:36px; height:36px; font-size:14px; }
+    }
+
+    /* dark/light quick adjustments (most via tailwind) */
+  </style>
+</head>
+<body class="bg-white text-black dark:bg-black dark:text-white">
+
+  <!-- STICKY NAV -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-black/60 backdrop-blur-md transition-colors">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-4 px-5 py-3">
+      <a href="#home" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold">ATG</div>
+        <span class="font-semibold text-gray-800 dark:text-gray-100">ABRAHAM THANKGOD
+      </a>
+
+      <!-- desktop nav -->
+      <nav class="hidden md:flex gap-6 items-center">
+        <a class="nav-link text-sm hover:text-blue-500 dark:hover:text-blue-400 transition" href="#home">Home</a>
+        <a class="nav-link text-sm hover:text-blue-500 dark:hover:text-blue-400 transition" href="#about">About</a>
+        <a class="nav-link text-sm hover:text-blue-500 dark:hover:text-blue-400 transition" href="#projects">Projects</a>
+        <a class="nav-link text-sm hover:text-blue-500 dark:hover:text-blue-400 transition" href="#contact">Contact</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <!-- theme toggle -->
+        <button id="theme-toggle" aria-label="Toggle theme" class="p-2 rounded-full bg-neutral-200 dark:bg-neutral-800 transition">
+          <span id="theme-icon">🌙</span>
+        </button>
+
+        <!-- hamburger mobile -->
+        <button id="menu-btn" class="md:hidden flex flex-col gap-1 p-2" aria-label="Open menu">
+          <span class="w-6 h-0.5 bg-black dark:bg-white"></span>
+          <span class="w-6 h-0.5 bg-black dark:bg-white"></span>
+          <span class="w-6 h-0.5 bg-black dark:bg-white"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- mobile menu -->
+    <nav id="mobile-menu" class="hidden md:hidden bg-white/95 dark:bg-black/90 backdrop-blur-md">
+      <ul class="flex flex-col gap-4 items-center py-6">
+        <li><a class="nav-link text-lg" href="#home">Home</a></li>
+        <li><a class="nav-link text-lg" href="#about">About</a></li>
+        <li><a class="nav-link text-lg" href="#projects">Projects</a></li>
+        <li><a class="nav-link text-lg" href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <main class="pt-20">
+    <section id="home" class="min-h-screen relative flex items-center justify-center text-center overflow-hidden">
+      <!-- video background (replace file if needed) -->
+      <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover opacity-40 z-0">
+        <source src="bgv.mp4" type="video/mp4" />
+      </video>
+
+      <!-- overlay gradient -->
+      <div class="absolute inset-0 bg-gradient-to-b from-white/40 dark:from-black/40 via-black/20 dark:via-black/30 to-black/40 z-10"></div>
+
+      <!-- content -->
+      <div class="relative z-20 max-w-4xl px-6">
+        <h1 class="hero-title text-black dark:text-white">ABRAHAM THANKGOD</h1>
+        <p class="mt-4 text-lg md:text-xl text-gray-700 dark:text-gray-300">
+          <span id="typed-text" class="font-semibold text-blue-600 dark:text-blue-400"></span>
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-4 justify-center">
+          <div class="p-3 bg-neutral-100 dark:bg-neutral-800 rounded-2xl shadow-md flex flex-col items-center w-28">
+            <img src="https://cdn-icons-png.flaticon.com/512/888/888954.png" alt="design" class="w-10 h-10">
+            <p class="text-xs mt-2">Design</p>
+          </div>
+          <div class="p-3 bg-neutral-100 dark:bg-neutral-800 rounded-2xl shadow-md flex flex-col items-center w-28">
+            <img src="https://cdn-icons-png.flaticon.com/512/888/888879.png" alt="web" class="w-10 h-10">
+            <p class="text-xs mt-2">Web</p>
+          </div>
+          <div class="p-3 bg-neutral-100 dark:bg-neutral-800 rounded-2xl shadow-md flex flex-col items-center w-28">
+            <img src="https://cdn-icons-png.flaticon.com/512/2910/2910768.png" alt="agri" class="w-10 h-10">
+            <p class="text-xs mt-2">Agriculture</p>
+          </div>
+        </div>
+
+        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="#projects" class="px-6 py-3 rounded-full bg-blue-600 text-white hover:bg-blue-500 transition shadow">🚀 View Work</a>
+          <a href="#contact" class="px-6 py-3 rounded-full bg-green-600 text-white hover:bg-green-500 transition shadow">💬 Let's Connect</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT (illustrative) -->
+    <section id="about" class="min-h-screen relative flex items-center justify-center overflow-hidden">
+      <!-- gentle background, use video/image -->
+      <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover opacity-18 z-0">
+        <source src="AFTER.mp4" type="video/mp4" />
+      </video>
+      <div class="absolute inset-0 bg-gradient-to-b from-white/80 dark:from-black/70 z-10"></div>
+
+      <div class="relative z-20 max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <!-- illustration -->
+        <div class="flex items-center justify-center">
+          <div class="relative w-72 h-72 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center shadow-xl">
+            <img src="MEO.jpg" alt="profile" class="w-56 h-56 rounded-full border-4 border-white/30">
+            <!-- glowing ring -->
+            <div class="absolute -inset-2 rounded-full border-2 border-white/10 blur-sm"></div>
+          </div>
+        </div>
+
+        <!-- text + floating icons -->
+        <div>
+          <h2 class="text-3xl font-bold mb-3">About Me</h2>
+          <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+            I'm <strong class="text-blue-600 dark:text-Light blue-400">ABRAHAM THANKGOD</strong> — I am a creative Graphics & Web Designer and an Agricultural Engineer, passionate about blending technology, design, and sustainability. I specialize in crafting memorable visual systems that leave a lasting impression and building tech solutions that empower farms and communities to grow sustainably. My work bridges the gap between innovation and practicality, helping businesses, farmers, and communities thrive through thoughtful design and smart technology.
+          </p>
+
+          <!-- floating icons representing skillset -->
+          <div class="mt-6 flex gap-4 items-center">
+            <div class="w-16 h-16 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center floaty">
+              <img src="https://cdn-icons-png.flaticon.com/512/888/888954.png" alt="design" class="w-8 h-8">
+            </div>
+            <div class="w-16 h-16 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center floaty" style="animation-delay: .4s;">
+              <img src="https://cdn-icons-png.flaticon.com/512/888/888879.png" alt="web" class="w-8 h-8">
+            </div>
+            <div class="w-16 h-16 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center floaty" style="animation-delay: .8s;">
+              <img src="https://cdn-icons-png.flaticon.com/512/2910/2910768.png" alt="agri" class="w-8 h-8">
+            </div>
+
+            <div class="ml-4 text-sm text-gray-600 dark:text-gray-300">Design • Web • Agricultural Engineering</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS (illustrative overlays & tilt) -->
+    <section id="projects" class="min-h-screen relative flex items-center justify-center overflow-hidden">
+      <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover opacity-12 z-0">
+        <source src="bgv.mp4" type="video/mp4" />
+      </video>
+      <div class="absolute inset-0 bg-gradient-to-b from-white/95 dark:from-black/90 z-10"></div>
+
+      <div class="relative z-20 max-w-6xl mx-auto px-6">
+        <h2 class="text-3xl font-bold text-center mb-8">PROJECTS</h2>
+
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <!-- Design Project -->
+          <article class="tilt-card group bg-white dark:bg-neutral-800 rounded-2xl p-4 shadow-md relative overflow-hidden">
+            <div class="relative">
+              <img src="TRESTA.jpg" alt="project design" class="w-full h-44 object-cover rounded-lg mb-4">
+              <div class="absolute top-4 left-4 bg-white/90 dark:bg-black/60 px-3 py-2 rounded-full shadow-sm">
+                <span class="text-sm">🎨 Design</span>
+              </div>
+            </div>
+            <h3 class="font-semibold text-lg">Brand Identity for Tresta</h3>
+            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Complete visual identity — logo, stationery, brand guidelines.</p>
+          </article>
+
+          <!-- Web Project -->
+          <article class="tilt-card group bg-white dark:bg-neutral-800 rounded-2xl p-4 shadow-md relative overflow-hidden">
+            <div class="relative">
+              <img src="MIO.jpg" alt="project web" class="w-full h-44 object-cover rounded-lg mb-4">
+              <div class="absolute top-4 left-4 bg-white/90 dark:bg-black/60 px-3 py-2 rounded-full shadow-sm">
+                <span class="text-sm">💻 Web</span>
+              </div>
+            </div>
+            <h3 class="font-semibold text-lg">Portfolio Website</h3>
+            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Responsive, animated portfolio with smooth interactions.</p>
+          </article>
+
+          <!-- Agri-tech Project -->
+          <article class="tilt-card group bg-white dark:bg-neutral-800 rounded-2xl p-4 shadow-md relative overflow-hidden">
+            <div class="relative">
+              <img src="MEO.jpg" alt="project agri" class="w-full h-44 object-cover rounded-lg mb-4">
+              <div class="absolute top-4 left-4 bg-white/90 dark:bg-black/60 px-3 py-2 rounded-full shadow-sm">
+                <span class="text-sm">🌱 Agro</span>
+              </div>
+            </div>
+            <h3 class="font-semibold text-lg">Agro-Tech Platform</h3>
+            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Platform connecting farmers to buyers with analytics.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT (illustrative orbit icons) -->
+    <section id="contact" class="min-h-screen relative flex items-center justify-center overflow-hidden">
+      <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover opacity-12 z-0">
+        <source src="NO.mp4" type="video/mp4" />
+      </video>
+      <div class="absolute inset-0 bg-gradient-to-b from-white/95 dark:from-black/90 z-10"></div>
+
+      <div class="relative z-20 max-w-xl mx-auto px-6">
+        <div class="relative bg-white dark:bg-neutral-900 rounded-2xl p-8 shadow-xl">
+          <h2 class="text-2xl font-bold text-center mb-3">Let’s Connect</h2>
+          <p class="text-gray-700 dark:text-gray-300 text-center mb-6">I’m open to projects, collaborations and friendly conversations.</p>
+
+          <div class="grid grid-cols-1 gap-3">
+            <a href="mailto:abrahammicheal973@gmail.com" class="w-full inline-flex items-center justify-center gap-3 px-4 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-500 transition">
+              ✉️ Email — abrahammicheal973@gmail.com
+            </a>
+
+            <a href="https://wa.me/2348167999502?text=Hi%20Abraham%2C%20I%27m%20interested%20in%20your%20design%20and%20web%20services." target="_blank"
+               class="w-full inline-flex items-center justify-center gap-3 px-4 py-3 rounded-lg bg-green-600 text-white hover:bg-green-500 transition">
+              💬 WhatsApp — Message me
+            </a>
+          </div>
+
+          <!-- orbiting illustrative icons -->
+          <div class="absolute inset-0 pointer-events-none">
+            <div class="orbit spin-1" style="width:100%;height:100%;position:absolute;">
+              <div class="dot" style="left:10%;top:30%; transform-origin:50% 150%; background:rgba(14,165,255,0.12);">
+                <div class="w-11 h-11 rounded-full flex items-center justify-center bg-white/90 dark:bg-black/80">
+                  ✉️
+                </div>
+              </div>
+            </div>
+
+            <div class="orbit spin-2" style="width:100%;height:100%;position:absolute;">
+              <div class="dot" style="right:8%;top:20%; transform-origin:50% 150%; background:rgba(34,197,94,0.08);">
+                <div class="w-11 h-11 rounded-full flex items-center justify-center bg-white/90 dark:bg-black/80">
+                  📱
+                </div>
+              </div>
+            </div>
+
+            <div class="orbit spin-3" style="width:100%;height:100%;position:absolute;">
+              <div class="dot" style="left:45%;bottom:6%; transform-origin:50% 150%; background:rgba(249,115,22,0.08);">
+                <div class="w-11 h-11 rounded-full flex items-center justify-center bg-white/90 dark:bg-black/80">
+                  💬
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FLOATING WHATSAPP -->
+  <a id="whatsapp-btn"
+     class="fixed right-6 bottom-6 z-50 opacity-0 translate-y-6"
+     href="https://wa.me/2348167999502?text=Hello%20Abraham%2C%20I%20found%20your%20portfolio%20and%20want%20to%20connect."
+     target="_blank" rel="noreferrer">
+    <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="whatsapp" class="w-14 h-14">
+  </a>
+
+  <!-- SCRIPTS -->
+  <script>
+    // Allow DOM to be ready
+    document.addEventListener("DOMContentLoaded", () => {
+      // Typed Hero
+      new Typed("#typed-text", {
+        strings: [
+          "I Create Designs.",
+          "I Build Websites.",
+          "I Engineer Agriculture.",
+          "I Make Ideas Real."
+        ],
+        typeSpeed: 60,
+        backSpeed: 40,
+        backDelay: 2000,
+        startDelay: 400,
+        loop: true
+      });
+
+      // Slide-in WhatsApp after small delay
+      window.addEventListener("load", () => {
+        gsap.to("#whatsapp-btn", { opacity: 1, y: 0, duration: 1, delay: 2.8, ease: "back.out(1.2)" });
+      });
+
+      // Mobile menu toggle
+      const menuBtn = document.getElementById("menu-btn");
+      const mobileMenu = document.getElementById("mobile-menu");
+      menuBtn && menuBtn.addEventListener("click", () => {
+        if (!mobileMenu) return;
+        mobileMenu.classList.toggle("hidden");
+        gsap.fromTo(mobileMenu, { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: .28, ease: "power2.out" });
+      });
+
+      // Smooth scroll for nav links (desktop & mobile)
+      document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener("click", function(e) {
+          const href = this.getAttribute("href");
+          if (href.startsWith("#")) {
+            e.preventDefault();
+            const el = document.querySelector(href);
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+            // hide mobile menu after click
+            if (mobileMenu && !mobileMenu.classList.contains("hidden")) mobileMenu.classList.add("hidden");
+          }
+        });
+      });
+
+      // Active nav highlight
+      const sections = document.querySelectorAll("main section, header");
+      const navLinks = document.querySelectorAll(".nav-link");
+      window.addEventListener("scroll", () => {
+        const offset = window.scrollY + 160;
+        let current = "home";
+        document.querySelectorAll("main section[id]").forEach(section => {
+          if (section.offsetTop <= offset) current = section.id;
+        });
+        navLinks.forEach(link => {
+          link.classList.remove("text-blue-600", "dark:text-blue-400", "font-bold");
+          if (link.getAttribute("href") === "#" + current) {
+            link.classList.add("text-blue-600", "dark:text-blue-400", "font-bold");
+          }
+        });
+      });
+
+      // Theme toggle with localStorage
+      const themeToggle = document.getElementById("theme-toggle");
+      const themeIcon = document.getElementById("theme-icon");
+      const root = document.documentElement;
+
+      function setTheme(mode) {
+        if (mode === "dark") {
+          root.classList.add("dark");
+          document.body.classList.add("dark");
+          themeIcon.textContent = "🌞";
+          localStorage.setItem("theme", "dark");
+        } else {
+          root.classList.remove("dark");
+          document.body.classList.remove("dark");
+          themeIcon.textContent = "🌙";
+          localStorage.setItem("theme", "light");
+        }
+      }
+
+      const saved = localStorage.getItem("theme");
+      setTheme(saved ? saved : "dark");
+
+      themeToggle.addEventListener("click", () => {
+        const isDark = document.documentElement.classList.contains("dark");
+        setTheme(isDark ? "light" : "dark");
+        // small transition tween for nicer feel
+        gsap.fromTo("body", { opacity: 0.96 }, { opacity: 1, duration: 0.35 });
+      });
+
+      // small entrance animation for cards
+      gsap.utils.toArray('.tilt-card').forEach((card, i) => {
+        gsap.from(card, { y: 24, opacity: 0, delay: 0.15 + i*0.08, duration: 0.6, ease: "power3.out" });
+      });
+
+      // reduce motion if user prefers reduced motion
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        gsap.globalTimeline.timeScale(2.5);
+      }
+    });
+  </script>
+
+  <!-- NOTES:
+    - Replace video files in /videos (hero-bg.mp4, about-bg.mp4, projects-bg.mp4, contact-bg.mp4) with your own.
+    - Replace images in the Projects section with real project thumbnails.
+    - The WhatsApp button uses your number +2348167999502 and prefilled messages.
+    - The email used is abrahammicheal973@gmail.com.
+  -->
+</body>
+</html>
