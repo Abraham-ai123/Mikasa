@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Travee - Explore the World</title>
+  <style>
+    /* RESET */
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:"Poppins",sans-serif;line-height:1.6;color:#333;background:#fff;}
+    a{text-decoration:none;color:inherit;}
+    ul{list-style:none;}
+
+    /* HEADER */
+    header{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:1rem 8%;background:#fff;position:fixed;top:0;left:0;right:0;
+      z-index:1000;box-shadow:0 2px 10px rgba(0,0,0,0.05);
+    }
+    .logo{font-size:1.5rem;font-weight:700;color:#06b6d4;}
+    nav{display:flex;}
+    nav ul{display:flex;gap:1.2rem;}
+    nav ul li a{font-weight:500;transition:.3s;}
+    nav ul li a:hover{color:#06b6d4;}
+    .menu-toggle{display:none;flex-direction:column;cursor:pointer;}
+    .menu-toggle span{height:3px;width:25px;background:#333;margin:4px 0;border-radius:3px;}
+
+    .btn{padding:.6rem 1.2rem;border-radius:8px;border:none;cursor:pointer;font-weight:600;transition:.3s;}
+    .btn-primary{background:#06b6d4;color:#fff;}
+    .btn-primary:hover{background:#0891b2;}
+
+    /* HERO */
+    .hero{
+      margin-top:70px;background:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e') no-repeat center/cover;
+      padding:5rem 8%;color:#fff;border-radius:0 0 40px 40px;position:relative;text-align:center;
+    }
+    .hero h1{font-size:2.2rem;max-width:600px;margin:auto;}
+    .hero p{margin-top:1rem;font-size:1.1rem;}
+    .search-box{
+      margin-top:2rem;background:#fff;padding:1rem;border-radius:12px;
+      display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:center;
+    }
+    .search-box input,.search-box select{
+      padding:.6rem;border:1px solid #ccc;border-radius:8px;flex:1;min-width:140px;
+    }
+
+    /* SECTION */
+    section{padding:3rem 8%;}
+    section h2{font-size:2rem;margin-bottom:1.5rem;text-align:center;}
+
+    /* PLACES GRID */
+    .places,.explore,.results{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;
+    }
+    .place-card{
+      border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,0.1);
+      background:#fff;transition:.3s;
+    }
+    .place-card:hover{transform:translateY(-5px);}
+    .place-card img{width:100%;height:160px;object-fit:cover;}
+    .place-card .info{padding:1rem;text-align:center;}
+    .place-card h3{font-size:1.1rem;margin-bottom:.3rem;}
+    .place-card span{font-size:.9rem;color:#666;}
+
+    /* FEATURES */
+    .features{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center;}
+    .features img{width:100%;border-radius:16px;}
+    .features ul li{margin-bottom:1rem;}
+
+    /* ADVENTURE */
+    .adventure{display:flex;overflow-x:auto;gap:1rem;scroll-behavior:smooth;}
+    .adventure-card{
+      min-width:180px;background:#f8fafc;padding:1rem;border-radius:12px;text-align:center;font-weight:500;
+    }
+
+    /* VIDEO SECTION */
+    .video-section{text-align:center;}
+    .video-section iframe{width:100%;max-width:800px;border-radius:16px;margin-top:1rem;}
+
+    /* FOOTER */
+    footer{background:#f1f5f9;padding:2rem 8%;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;font-size:.9rem;}
+    footer h4{margin-bottom:1rem;}
+    footer ul li{margin-bottom:.5rem;}
+    .subscribe-box{display:flex;gap:.5rem;}
+    .subscribe-box input{flex:1;padding:.6rem;border:1px solid #ccc;border-radius:8px;}
+
+    /* MODALS */
+    .modal{
+      display:none;position:fixed;z-index:2000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.6);justify-content:center;align-items:center;
+    }
+    .modal-content{
+      background:#fff;padding:2rem;border-radius:12px;max-width:400px;width:90%;text-align:center;position:relative;
+    }
+    .modal-content h3{margin-bottom:1rem;}
+    .modal-content input{width:100%;padding:.6rem;margin:.5rem 0;border:1px solid #ccc;border-radius:8px;}
+    .close{position:absolute;top:10px;right:15px;font-size:1.5rem;cursor:pointer;}
+
+    /* TOAST */
+    .toast{
+      position:fixed;bottom:20px;right:20px;background:#16a34a;color:#fff;padding:1rem 1.5rem;
+      border-radius:8px;display:none;align-items:center;gap:.5rem;font-weight:500;z-index:3000;
+    }
+    .toast.show{display:flex;animation:fadeInOut 3s forwards;}
+    @keyframes fadeInOut{0%{opacity:0;transform:translateY(20px);}10%,90%{opacity:1;transform:translateY(0);}100%{opacity:0;transform:translateY(20px);} }
+
+    /* RESPONSIVE */
+    @media(max-width:768px){
+      nav{display:none;flex-direction:column;position:absolute;top:70px;right:8%;background:#fff;padding:1rem;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
+      nav.show{display:flex;}
+      .menu-toggle{display:flex;}
+      .features{grid-template-columns:1fr;}
+      .hero h1{font-size:1.8rem;}
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="logo">Travee</div>
+    <nav>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#explore">Explore</a></li>
+        <li><a href="#adventure">Adventure</a></li>
+        <li><a href="#book">Book</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <div>
+      <button class="btn btn-primary" onclick="openModal('signinModal')">Sign In</button>
+      <button class="btn btn-primary" onclick="openModal('signupModal')">Sign Up</button>
+    </div>
+    <div class="menu-toggle" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <h1>Explore the whole world and enjoy its beauty</h1>
+    <p>Find and share about your experiences across the world</p>
+    <div class="search-box">
+      <select id="category">
+        <option value="hotels">Hotels</option>
+        <option value="flights">Flights</option>
+        <option value="cars">Cars</option>
+        <option value="tours">Tours</option>
+      </select>
+      <input type="text" id="destination" placeholder="Destination">
+      <input type="date" id="date">
+      <button class="btn btn-primary" onclick="searchReservations()">Search</button>
+    </div>
+    <div class="results" id="results"></div>
+  </section>
+
+  <!-- POPULAR PLACE -->
+  <section>
+    <h2>Popular Places</h2>
+    <div class="places">
+      <div class="place-card"><img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470" alt=""><div class="info"><h3>Disneyland Tokyo</h3><span>Japan</span></div></div>
+      <div class="place-card"><img src="https://images.unsplash.com/photo-1470770903676-69b98201ea1c" alt=""><div class="info"><h3>Thousand Islands</h3><span>Indonesia</span></div></div>
+      <div class="place-card"><img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e" alt=""><div class="info"><h3>Amalfi Coast</h3><span>Italy</span></div></div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section>
+    <h2>Travel to make sweet memories</h2>
+    <div class="features">
+      <ul>
+        <li>✅ Find trips that fit your freedom</li>
+        <li>✅ Get back to nature by travel</li>
+        <li>✅ Reignite those travel tastebuds</li>
+      </ul>
+      <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee" alt="">
+    </div>
+  </section>
+
+  <!-- ADVENTURE -->
+  <section id="adventure">
+    <h2>Let's go on an adventure</h2>
+    <div class="adventure">
+      <div class="adventure-card">Paris</div>
+      <div class="adventure-card">New York</div>
+      <div class="adventure-card">Seoul</div>
+      <div class="adventure-card">Bali</div>
+    </div>
+  </section>
+
+  <!-- BOOK -->
+  <section class="video-section" id="book">
+    <h2>Book tickets and go now!</h2>
+    <button class="btn btn-primary" onclick="showToast('Booking successful!')">Book now</button>
+    <br><br>
+    <iframe src="https://www.youtube.com/embed/oHg5SJYRHA0" frameborder="0" allowfullscreen></iframe>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div><h4>Travee</h4><p>20 Chandni Chowk St, Wonderland<br/>+123 456 7890</p></div>
+    <div><h4>Company</h4><ul><li>About</li><li>Careers</li><li>Press</li></ul></div>
+    <div><h4>Support</h4><ul><li>Help</li><li>FAQ</li><li>Contact</li></ul></div>
+    <div>
+      <h4>Subscribe</h4>
+      <div class="subscribe-box">
+        <input type="email" id="subscribeEmail" placeholder="Your Email">
+        <button class="btn btn-primary" onclick="subscribe()">Go</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODALS -->
+  <div class="modal" id="signinModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('signinModal')">&times;</span>
+      <h3>Sign In</h3>
+      <input type="email" placeholder="Email">
+      <input type="password" placeholder="Password">
+      <button class="btn btn-primary" onclick="showToast('Welcome back!')">Sign In</button>
+    </div>
+  </div>
+
+  <div class="modal" id="signupModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('signupModal')">&times;</span>
+      <h3>Sign Up</h3>
+      <input type="text" placeholder="Name">
+      <input type="email" placeholder="Email">
+      <input type="password" placeholder="Password">
+      <button class="btn btn-primary" onclick="showToast('Account created successfully!')">Sign Up</button>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">✔ <span id="toastMsg"></span></div>
+
+  <script>
+    // NAV MENU
+    function toggleMenu(){document.querySelector('nav').classList.toggle('show');}
+
+    // MODALS
+    function openModal(id){document.getElementById(id).style.display="flex";}
+    function closeModal(id){document.getElementById(id).style.display="none";}
+
+    // TOAST
+    function showToast(msg){
+      const toast=document.getElementById('toast');
+      document.getElementById('toastMsg').innerText=msg;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),3000);
+    }
+
+    // SUBSCRIBE
+    function subscribe(){
+      let email=document.getElementById('subscribeEmail').value;
+      if(email) showToast("Subscribed successfully!");
+      else showToast("Please enter your email.");
+    }
+
+    // SEARCH DATA
+    const data={
+      hotels:[
+        {name:"Hotel Sunshine",price:"$120/night",img:"https://images.unsplash.com/photo-1501117716987-c8e1ecb2101f"},
+        {name:"Ocean View Resort",price:"$200/night",img:"https://images.unsplash.com/photo-1566073771259-6a8506099945"}
+      ],
+      flights:[
+        {name:"Flight to Paris",price:"$480",img:"https://images.unsplash.com/photo-1504196606672-aef5c9cefc92"},
+        {name:"Flight to New York",price:"$650",img:"https://images.unsplash.com/photo-1502920917128-1aa500764b1c"}
+      ],
+      cars:[
+        {name:"Luxury Sedan",price:"$70/day",img:"https://images.unsplash.com/photo-1503376780353-7e6692767b70"},
+        {name:"SUV Adventure",price:"$90/day",img:"https://images.unsplash.com/photo-1533473359331-0135ef1b58bf"}
+      ],
+      tours:[
+        {name:"Safari Tour",price:"$300",img:"https://images.unsplash.com/photo-1508672019048-805c876b67e2"},
+        {name:"City Walking Tour",price:"$50",img:"https://images.unsplash.com/photo-1505761671935-60b3a7427bad"}
+      ]
+    };
+
+    // SEARCH FUNCTION
+    function searchReservations(){
+      const category=document.getElementById('category').value;
+      const results=document.getElementById('results');
+      results.innerHTML="";
+      data[category].forEach(item=>{
+        results.innerHTML+=`
+          <div class="place-card">
+            <img src="${item.img}" alt="">
+            <div class="info">
+              <h3>${item.name}</h3>
+              <span>${item.price}</span><br>
+              <button class="btn btn-primary" onclick="showToast('Booking successful! Your ${item.name} reserved.')">Book Now</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+  </script>
+</body>
+</html>
