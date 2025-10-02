@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeLine - Global Emergency Finder</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f0f2f5;
+      color: #222;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: linear-gradient(90deg, #E63946, #d62828);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    .hero {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .hero h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    .hero p {
+      color: #555;
+      font-size: 16px;
+    }
+    .search-bar {
+      display: flex;
+      justify-content: center;
+      margin: 20px auto;
+      max-width: 500px;
+    }
+    .search-bar input {
+      padding: 12px;
+      width: 70%;
+      border: 2px solid #E63946;
+      border-radius: 12px 0 0 12px;
+      outline: none;
+      font-size: 16px;
+    }
+    .search-bar button {
+      background: #06D6A0;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 0 12px 12px 0;
+      cursor: pointer;
+      color: white;
+      font-size: 18px;
+    }
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin: 15px auto;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: scale(1.02);
+    }
+    .btn {
+      display: block;
+      margin: 12px 0;
+      padding: 14px;
+      font-size: 18px;
+      font-weight: bold;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      text-decoration: none;
+    }
+    .police { background: #0077b6; }
+    .fire { background: #d00000; }
+    .ambulance { background: #06D6A0; }
+    .country-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      padding: 20px;
+    }
+    .country {
+      background: white;
+      padding: 12px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      cursor: pointer;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    .country:hover {
+      background: #f8d7da;
+    }
+    .sos {
+      background: #E63946;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 22px;
+      border-radius: 50%;
+      font-size: 22px;
+      cursor: pointer;
+      color: white;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(230,57,70,0.7); }
+      70% { box-shadow: 0 0 0 20px rgba(230,57,70,0); }
+      100% { box-shadow: 0 0 0 0 rgba(230,57,70,0); }
+    }
+    footer {
+      margin-top: 40px;
+      padding: 15px;
+      background: #222;
+      color: white;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>🚨 SafeLine - Global Emergency Finder</header>
+  
+  <div class="hero">
+    <h1>Help is just one tap away</h1>
+    <p>Find police, fire, and ambulance numbers anywhere in the world 🌍</p>
+    <div class="search-bar">
+      <input type="text" id="countryInput" placeholder="Enter your country...">
+      <button onclick="searchCountry()">🔍</button>
+    </div>
+  </div>
+
+  <div id="emergencyNumbers"></div>
+
+  <h2 style="text-align:center; margin-top:20px;">🌍 Browse Countries</h2>
+  <div class="country-list" id="countryList"></div>
+
+  <button class="sos" onclick="callSOS()">SOS</button>
+
+  <footer>© 2025 SafeLine. Help is one tap away.</footer>
+
+  <script>
+    const emergencyData = {
+      "argentina": { police: "911", ambulance: "911", fire: "100" },
+      "australia": { police: "000", ambulance: "000", fire: "000" },
+      "austria": { police: "133", ambulance: "144", fire: "122" },
+      "belgium": { police: "101", ambulance: "100", fire: "100" },
+      "brazil": { police: "190", ambulance: "192", fire: "193" },
+      "canada": { police: "911", ambulance: "911", fire: "911" },
+      "china": { police: "110", ambulance: "120", fire: "119" },
+      "colombia": { police: "123", ambulance: "123", fire: "123" },
+      "france": { police: "17", ambulance: "15", fire: "18" },
+      "germany": { police: "110", ambulance: "112", fire: "112" },
+      "india": { police: "100", ambulance: "102", fire: "101" },
+      "indonesia": { police: "110", ambulance: "118", fire: "113" },
+      "ireland": { police: "999", ambulance: "999", fire: "999" },
+      "italy": { police: "113", ambulance: "118", fire: "115" },
+      "japan": { police: "110", ambulance: "119", fire: "119" },
+      "nigeria": { police: "112", ambulance: "112", fire: "112" },
+      "south africa": { police: "10111", ambulance: "10177", fire: "10177" },
+      "spain": { police: "112", ambulance: "112", fire: "112" },
+      "turkey": { police: "155", ambulance: "112", fire: "110" },
+      "uk": { police: "999", ambulance: "999", fire: "999" },
+      "usa": { police: "911", ambulance: "911", fire: "911" }
+    };
+
+    function searchCountry() {
+      const input = document.getElementById("countryInput").value.toLowerCase();
+      const numbers = emergencyData[input];
+
+      if (numbers) {
+        document.getElementById("emergencyNumbers").innerHTML = `
+          <div class="card">
+            <h2>Emergency Numbers for ${input.toUpperCase()}</h2>
+            <a href="tel:${numbers.police}" class="btn police">🚔 Police: ${numbers.police}</a>
+            <a href="tel:${numbers.fire}" class="btn fire">🔥 Fire: ${numbers.fire}</a>
+            <a href="tel:${numbers.ambulance}" class="btn ambulance">🚑 Ambulance: ${numbers.ambulance}</a>
+          </div>
+        `;
+      } else {
+        document.getElementById("emergencyNumbers").innerHTML = `
+          <div class="card"><h2>No Data</h2>
+          <p>Sorry, emergency numbers for this country are not available yet.</p></div>
+        `;
+      }
+    }
+
+    function showCountryList() {
+      const container = document.getElementById("countryList");
+      container.innerHTML = ""; 
+      Object.keys(emergencyData).sort().forEach(countryKey => {
+        const displayName = countryKey.charAt(0).toUpperCase() + countryKey.slice(1);
+        const div = document.createElement("div");
+        div.textContent = displayName;
+        div.className = "country";
+        div.addEventListener("click", () => {
+          document.getElementById("countryInput").value = displayName;
+          searchCountry(); 
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        container.appendChild(div);
+      });
+    }
+
+    function callSOS() {
+      window.location.href = "tel:112";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      showCountryList();
+    });
+  </script>
+</body>
+</html>
